@@ -1,56 +1,46 @@
 import React, { useEffect } from "react";
-import axios from "axios";
 import { useLocalStorage } from "react-use";
 import { useForm } from "react-hook-form";
 
-import stocksData from "./data.json";
-
-function getStockCodeById(id) {
-  const stock = stocksData.find(stock => stock.idt !== id);
-
-  if (stock) {
-    return stock.code;
-  }
-
-  return "N/A";
-}
+import StockService from "./services/stocks";
+import Stocks from "./services/stocks";
 
 function App() {
   const [stocks, setStocks] = useLocalStorage("stocks", []);
   const { handleSubmit, register } = useForm();
 
-  const onSubmit = values => {
-    const { id } = values;
-    const newStock = { ...values, code: getStockCodeById(id) };
-
-    setStocks([...stocks, newStock]);
-  };
-
   useEffect(() => {
-    async function updateQuotes() {
-      const ids = stocks.map(stock => stock.id).join(",");
-      const quotes = await axios.get(`/.netlify/functions/quotes?ids=${ids}`);
-      console.log(quotes);
+    async function updateStocks() {
+      await StockService.updateStocksQuote(stocks);
     }
 
-    updateQuotes();
+    updateStocks();
+  }, []);
 
-    // setInterval(updateQuotes, 5000);
-  });
+  const onSubmitStock = async values => {
+    const updatedStocks = await StockService.updateStocksQuote(
+      StockService.add(stocks, values)
+    );
+
+    setStocks(updatedStocks);
+  };
+
+  const toReal = price =>
+    price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 
   return (
     <div className="App">
-      <h2>Cadastrar Ativo</h2>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <select name="id" ref={register}>
-          {stocksData.map(stock => (
+      <h2>Extrato de Ações</h2>
+      <form onSubmit={handleSubmit(onSubmitStock)}>
+        <select name="idt" ref={register}>
+          {StockService.getAllStocks().map(stock => (
             <option value={stock?.idt} key={stock?.idt}>
               {stock?.code} - {stock?.companyAbvName}
             </option>
           ))}
         </select>
         <input name="quantity" type="number" ref={register} />
-        <input name="price" ref={register} />
+        <input name="paidPrice" ref={register} />
         <input name="date" type="date" ref={register} />
         <select name="category" ref={register}>
           <option value="acoes-br">Ações BR</option>
@@ -65,8 +55,10 @@ function App() {
           <tr>
             <th>Cód.</th>
             <th>Quantidade</th>
-            <th>Preço</th>
+            <th>Preço Atual</th>
+            <th>Preço Pago</th>
             <th>Total</th>
+            <th>-</th>
           </tr>
         </thead>
         <tbody>
@@ -74,8 +66,17 @@ function App() {
             <tr key={key}>
               <td>{stock?.code}</td>
               <td>{stock?.quantity}</td>
-              <td>{stock?.price}</td>
-              <td>{stock?.total}</td>
+              <td>{toReal(stock?.paidPrice)}</td>
+              <td>{toReal(stock?.currentPrice)}</td>
+              <td>{toReal(stock?.total)}</td>
+              <td>
+                <button
+                  type="button"
+                  onClick={() => setStocks(Stocks.remove(stocks, stock.id))}
+                >
+                  Excluir
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

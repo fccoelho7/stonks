@@ -4,16 +4,16 @@ exports.handler = async event => {
   const stocks = event.queryStringParameters.ids.split(",");
 
   const promises = stocks.map(
-    id =>
+    idt =>
       new Promise(async resolve => {
         try {
           const { data: response } = await axios.get(
-            `http://cotacoes.economia.uol.com.br/ws/asset/${id}/intraday`
+            `http://cotacoes.economia.uol.com.br/ws/asset/${idt}/intraday`
           );
 
-          resolve({ id, ...response.data[0] });
+          resolve({ idt, ...response.data[0] });
         } catch (e) {
-          resolve({ id, error: true });
+          resolve({ idt, error: true });
         }
       })
   );
