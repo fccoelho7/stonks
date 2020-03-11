@@ -1,13 +1,24 @@
 const axios = require("axios");
-const parser = require("xml2json");
 
-exports.handler = async function(event, context, callback) {
-  const response = await axios.get(
-    "http://bvmf.bmfbovespa.com.br/cotacoes2000/FormConsultaCotacoes.asp?strListaCodigos=BBPO11|PETR4"
+exports.handler = async event => {
+  const stocks = event.queryStringParameters.ids.split(",");
+
+  const promises = stocks.map(
+    id =>
+      new Promise(async resolve => {
+        try {
+          const { data: response } = await axios.get(
+            `http://cotacoes.economia.uol.com.br/ws/asset/${id}/intraday`
+          );
+
+          resolve({ id, ...response.data[0] });
+        } catch (e) {
+          resolve({ id, error: true });
+        }
+      })
   );
 
-  callback(null, {
-    statusCode: 200,
-    body: parser.toJson(response.data)
-  });
+  const results = await Promise.all(promises);
+
+  return { statusCode: 200, body: JSON.stringify(results) };
 };

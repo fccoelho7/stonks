@@ -3,19 +3,33 @@ import axios from "axios";
 import { useLocalStorage } from "react-use";
 import { useForm } from "react-hook-form";
 
-import "./App.css";
+import stocksData from "./data.json";
+
+function getStockCodeById(id) {
+  const stock = stocksData.find(stock => stock.idt !== id);
+
+  if (stock) {
+    return stock.code;
+  }
+
+  return "N/A";
+}
 
 function App() {
   const [stocks, setStocks] = useLocalStorage("stocks", []);
   const { handleSubmit, register } = useForm();
-  const onSubmit = values => setStocks([...stocks, values]);
+
+  const onSubmit = values => {
+    const { id } = values;
+    const newStock = { ...values, code: getStockCodeById(id) };
+
+    setStocks([...stocks, newStock]);
+  };
 
   useEffect(() => {
     async function updateQuotes() {
-      const names = stocks.map(stock => stock.name).join(",");
-      const quotes = await axios.get(
-        `https://api.hgbrasil.com/finance/stock_price?key=ab40b5d7&symbol=${names}`
-      );
+      const ids = stocks.map(stock => stock.id).join(",");
+      const quotes = await axios.get(`/.netlify/functions/quotes?ids=${ids}`);
       console.log(quotes);
     }
 
@@ -28,9 +42,15 @@ function App() {
     <div className="App">
       <h2>Cadastrar Ativo</h2>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <input name="name" ref={register} />
+        <select name="id" ref={register}>
+          {stocksData.map(stock => (
+            <option value={stock?.idt} key={stock?.idt}>
+              {stock?.code} - {stock?.companyAbvName}
+            </option>
+          ))}
+        </select>
         <input name="quantity" type="number" ref={register} />
-        <input name="price"  ref={register} />
+        <input name="price" ref={register} />
         <input name="date" type="date" ref={register} />
         <select name="category" ref={register}>
           <option value="acoes-br">Ações BR</option>
@@ -43,7 +63,7 @@ function App() {
       <table>
         <thead>
           <tr>
-            <th>Ativo</th>
+            <th>Cód.</th>
             <th>Quantidade</th>
             <th>Preço</th>
             <th>Total</th>
@@ -52,7 +72,7 @@ function App() {
         <tbody>
           {stocks.map((stock, key) => (
             <tr key={key}>
-              <td>{stock?.name}</td>
+              <td>{stock?.code}</td>
               <td>{stock?.quantity}</td>
               <td>{stock?.price}</td>
               <td>{stock?.total}</td>
