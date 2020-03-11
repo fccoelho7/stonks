@@ -18,15 +18,14 @@ function App() {
   }, []);
 
   const onSubmitStock = async values => {
-    const updatedStocks = await StockService.updateStocksQuote(
-      StockService.add(stocks, values)
-    );
+    const updatedStocks = await StockService.updateStocksQuote(StockService.add(stocks, values));
 
     setStocks(updatedStocks);
   };
 
-  const toReal = price =>
-    price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const toReal = price => price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+
+  const wallet = StockService.getWallet(stocks);
 
   return (
     <div className="App">
@@ -50,14 +49,41 @@ function App() {
         </select>
         <button type="submit">Cadastrar</button>
       </form>
+      <hr />
+      <h2>Carteira</h2>
+      <h3>Rendimentos: {wallet?.totalPercentage}%</h3>
       <table>
         <thead>
           <tr>
             <th>Cód.</th>
             <th>Quantidade</th>
-            <th>Preço Atual</th>
-            <th>Preço Pago</th>
+            <th>PM (R$)</th>
+            <th>PM (%)</th>
             <th>Total</th>
+            <th>-</th>
+          </tr>
+        </thead>
+        <tbody>
+          {wallet.data.map((stock, key) => (
+            <tr key={key}>
+              <td>{stock?.code}</td>
+              <td>{stock?.totalQuantity}</td>
+              <td>{toReal(+stock?.averagePrice)}</td>
+              <td>{stock?.averagePercentage}%</td>
+              <td>{toReal(+stock?.total)}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <hr />
+      <h2>Extrato</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Cód.</th>
+            <th>Quantidade</th>
+            <th>Preço Pago</th>
+            <th>Data</th>
             <th>-</th>
           </tr>
         </thead>
@@ -66,14 +92,10 @@ function App() {
             <tr key={key}>
               <td>{stock?.code}</td>
               <td>{stock?.quantity}</td>
-              <td>{toReal(stock?.paidPrice)}</td>
-              <td>{toReal(stock?.currentPrice)}</td>
-              <td>{toReal(stock?.total)}</td>
+              <td>{toReal(+stock?.paidPrice)}</td>
+              <td>{stock?.date}</td>
               <td>
-                <button
-                  type="button"
-                  onClick={() => setStocks(Stocks.remove(stocks, stock.id))}
-                >
+                <button type="button" onClick={() => setStocks(Stocks.remove(stocks, stock?.id))}>
                   Excluir
                 </button>
               </td>
