@@ -1,117 +1,26 @@
 import React, { useEffect, useState } from "react";
-import { useLocalStorage } from "react-use";
-import {
-  Layout,
-  Menu,
-  PageHeader,
-  Table,
-  Card,
-  Row,
-  Col,
-  Button,
-  Drawer,
-  Form,
-  Input,
-  Select,
-  DatePicker,
-  InputNumber
-} from "antd";
-import { useForm } from "react-hook-form";
+import { Layout, Menu, PageHeader, Card, Row, Col, Button, Drawer } from "antd";
 
-import StockService from "./services/stocks";
+import useStocks from "./hooks/useStocks";
+import TransactionsTable from "./components/TransactionsTable";
+import WalletTable from "./components/WalletTable";
+import TransactionForm from "./components/TransactionForm";
 
 import "./App.css";
 
 const { Sider, Content } = Layout;
 
 function App() {
-  const [stocks, setStocks] = useLocalStorage("stocks", []);
+  const { transactions, addTransaction, removeTransaction, refreshQuotes, wallet, allCompanies } = useStocks();
   const [visible, setVisible] = useState(false);
-  const { handleSubmit, register } = useForm();
 
   useEffect(() => {
-    async function updateStocks() {
-      await StockService.updateStocksQuote(stocks);
-    }
-
-    updateStocks();
+    refreshQuotes();
   }, []);
 
-  const onSubmitStock = async values => {
-    console.log(values);
-    // const updatedStocks = await StockService.updateStocksQuote(StockService.add(stocks, values));
-
-    // setStocks(updatedStocks);
-  };
-
-  const toReal = price => price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
-
-  const transactionsColumns = [
-    {
-      title: "Cód.",
-      dataIndex: "code",
-      key: "code"
-    },
-    {
-      title: "Qntd.",
-      dataIndex: "quantity",
-      key: "quantity"
-    },
-    {
-      title: "Data",
-      dataIndex: "date",
-      key: "date",
-      render: value => new Date(value).toLocaleDateString()
-    }
-  ];
-
-  const transactionsData = stocks;
-
-  const walletColumns = [
-    {
-      title: "Cód.",
-      dataIndex: "code",
-      key: "code"
-    },
-    {
-      title: "PM (R$)",
-      dataIndex: "averagePrice",
-      key: "averagePrice",
-      render: value => toReal(+value)
-    },
-    {
-      title: "%PM",
-      dataIndex: "averagePercentage",
-      key: "averagePercentage",
-      render: value => `${value}%`
-    },
-    {
-      title: "Total",
-      dataIndex: "total",
-      key: "total",
-      render: value => toReal(+value)
-    }
-  ];
-
-  const wallet = StockService.getWallet(stocks);
-
-  const walletData = wallet.data.map((stock, key) => {
-    return { ...stock, key };
-  });
-
-  const formLayout = {
-    labelCol: {
-      span: 24
-    },
-    wrapperCol: {
-      span: 24
-    }
-  };
-
-  const buttonsLayout = {
-    wrapperCol: {
-      span: 24
-    }
+  const onSubmitTransaction = async values => {
+    await addTransaction({ ...values, date: values.date.toDate() });
+    setVisible(false);
   };
 
   return (
@@ -140,59 +49,18 @@ function App() {
               onClose={() => setVisible(false)}
               visible={visible}
             >
-              <Form
-                layout="vertical"
-                name="basic"
-                initialValues={{ remember: true }}
-                onFinish={onSubmitStock}
-                // onFinishFailed={onFinishFailed}
-                {...formLayout}
-              >
-                <Form.Item label="Ativo" name="idt" rules={[{ required: true }]}>
-                  <Select showSearch optionFilterProp="children">
-                    {StockService.getAllStocks().map(stock => (
-                      <Select.Option value={stock?.idt}>
-                        {stock?.code} - {stock?.companyAbvName}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                <Form.Item label="Categoria" name="category" rules={[{ required: true }]}>
-                  <Select>
-                    <Select.Option value="acoes-br">Ações BR</Select.Option>
-                    <Select.Option value="acoes-us">Ações US</Select.Option>
-                    <Select.Option value="fii">FII</Select.Option>
-                    <Select.Option value="caixa">Caixa</Select.Option>
-                  </Select>
-                </Form.Item>
-                <Form.Item label="Quantidade" name="quantity" rules={[{ required: true }]}>
-                  <InputNumber />
-                </Form.Item>
-                <Form.Item label="Preço" name="paidPrice" rules={[{ required: true }]}>
-                  <InputNumber
-                    formatter={value => `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
-                    parser={value => value.replace(/R\$\s?|(,*)/g, "")}
-                  />
-                </Form.Item>
-                <Form.Item label="Data" name="date" rules={[{ required: true }]}>
-                  <DatePicker />
-                </Form.Item>
-                <Form.Item {...buttonsLayout}>
-                  <Button type="primary" htmlType="submit">
-                    Salvar
-                  </Button>
-                  <Button type="link" onClick={() => setVisible(false)}>
-                    Cancelar
-                  </Button>
-                </Form.Item>
-              </Form>
+              <TransactionForm
+                allCompanies={allCompanies}
+                onSubmit={onSubmitTransaction}
+                onClose={() => setVisible(false)}
+              />
             </Drawer>
 
             <Row gutter={30}>
               <Col span={12}>
                 <Card title="Carteira" style={{ marginBottom: 30 }}>
-                  <h3>Rendimentos: {wallet?.totalPercentage}%</h3>
-                  <Table column columns={walletColumns} dataSource={walletData} />
+                  <h3>Rendimento Total: {wallet?.totalPercentage}%</h3>
+                  <WalletTable wallet={wallet} />
                 </Card>
               </Col>
               <Col span={12}>
@@ -204,7 +72,7 @@ function App() {
                     </Button>
                   }
                 >
-                  <Table columns={transactionsColumns} dataSource={transactionsData} />
+                  <TransactionsTable transactions={transactions} removeTransaction={removeTransaction} />
                 </Card>
               </Col>
             </Row>
