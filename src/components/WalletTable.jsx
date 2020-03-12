@@ -8,7 +8,14 @@ const WalletTable = ({ wallet }) => {
     {
       title: "Cód.",
       dataIndex: "code",
-      key: "code"
+      key: "code",
+      render: code => <a href="#">{code}</a>
+    },
+    {
+      title: "Preço Atual",
+      dataIndex: "currentPrice",
+      key: "currentPrice",
+      render: value => toReal(+value)
     },
     {
       title: "Preço Médio",
@@ -18,8 +25,8 @@ const WalletTable = ({ wallet }) => {
     },
     {
       title: "Rent. Sobre PM",
-      dataIndex: "averagePercentage",
-      key: "averagePercentage",
+      dataIndex: "averagePricePercentage",
+      key: "averagePricePercentage",
       render: value => `${value}%`
     },
     {

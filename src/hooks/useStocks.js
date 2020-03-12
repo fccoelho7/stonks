@@ -5,9 +5,9 @@ function useStocks(initialValues = []) {
   const [transactions, setTransactions] = useLocalStorage("stocks", initialValues);
 
   const addTransaction = async transaction =>
-    setTransactions(await StockService.updateStocksQuote(StockService.add(transactions, transaction)));
+    setTransactions(await StockService.updateStocksQuote(StockService.addTransaction(transactions, transaction)));
 
-  const removeTransaction = id => setTransactions(StockService.remove(transactions, id));
+  const removeTransaction = id => setTransactions(StockService.removeTransaction(transactions, id));
 
   const refreshQuotes = async () => setTransactions(await StockService.updateStocksQuote(transactions));
 

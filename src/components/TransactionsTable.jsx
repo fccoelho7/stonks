@@ -1,12 +1,25 @@
 import React from "react";
-import { Button, Table } from "antd";
+import { Button, Table, Typography, Tag } from "antd";
 
 import { toReal } from "../helpers";
+
+const { Text } = Typography;
 
 const TransactionsTable = ({ transactions, removeTransaction }) => {
   const transactionsColumns = [
     {
-      title: "Cód.",
+      title: "",
+      dataIndex: "type",
+      key: "type",
+      render: value => {
+        const type = value === "buy" ? "Aporte" : "Resgate";
+        const color = value === "buy" ? "green" : "red";
+
+        return <Tag color={color}>{type}</Tag>;
+      }
+    },
+    {
+      title: "Ativo",
       dataIndex: "code",
       key: "code"
     },
@@ -17,8 +30,8 @@ const TransactionsTable = ({ transactions, removeTransaction }) => {
     },
     {
       title: "Preço",
-      dataIndex: "paidPrice",
-      key: "paidPrice",
+      dataIndex: "amount",
+      key: "amount",
       render: value => toReal(+value)
     },
     {

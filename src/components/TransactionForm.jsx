@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Form, Select, DatePicker, InputNumber } from "antd";
+import moment from "moment";
 
 const TransactionForm = ({ onSubmit, allCompanies, onClose }) => {
   const formLayout = {
@@ -17,8 +18,16 @@ const TransactionForm = ({ onSubmit, allCompanies, onClose }) => {
     }
   };
 
+  const dateFormat = "DD/MM/YYYY";
+
   return (
     <Form layout="vertical" name="basic" initialValues={{ remember: true }} onFinish={onSubmit} {...formLayout}>
+      <Form.Item label="Operação" name="type" rules={[{ required: true }]}>
+        <Select>
+          <Select.Option value="buy">Aporte</Select.Option>
+          <Select.Option value="sell">Resgate</Select.Option>
+        </Select>
+      </Form.Item>
       <Form.Item label="Ativo" name="idt" rules={[{ required: true }]}>
         <Select showSearch optionFilterProp="children" autoFocus>
           {allCompanies.map(stock => (
@@ -39,14 +48,14 @@ const TransactionForm = ({ onSubmit, allCompanies, onClose }) => {
       <Form.Item label="Quantidade" name="quantity" rules={[{ required: true }]}>
         <InputNumber />
       </Form.Item>
-      <Form.Item label="Preço" name="paidPrice" rules={[{ required: true }]}>
+      <Form.Item label="Valor" name="amount" rules={[{ required: true }]}>
         <InputNumber
           formatter={value => `R$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           parser={value => value.replace(/R\$\s?|(,*)/g, "")}
         />
       </Form.Item>
       <Form.Item label="Data" name="date" rules={[{ required: true }]}>
-        <DatePicker />
+        <DatePicker format={dateFormat} />
       </Form.Item>
       <Form.Item {...buttonsLayout}>
         <Button type="primary" htmlType="submit">

@@ -4,9 +4,9 @@ import groupBy from "lodash/groupBy";
 import data from "./data.json";
 
 const Stocks = {
-  add(stocks, props) {
-    const { idt, date, quantity, paidPrice, category } = props;
-    const { code } = this.getStockCodeByIdt(props.idt);
+  addTransaction(stocks, transaction) {
+    const { idt, date, quantity, amount, category, type } = transaction;
+    const { code } = this.getStockCodeByIdt(transaction.idt);
     const id = Date.now();
 
     return [
@@ -14,9 +14,10 @@ const Stocks = {
       {
         id,
         idt: +idt,
+        type,
         code,
         quantity: +quantity,
-        paidPrice: +paidPrice,
+        amount: +amount,
         category,
         date,
         currentPrice: 0
@@ -24,7 +25,7 @@ const Stocks = {
     ];
   },
 
-  remove(stocks, id) {
+  removeTransaction(stocks, id) {
     return stocks.filter(stock => stock.id !== id);
   },
 
@@ -56,28 +57,28 @@ const Stocks = {
     return (price / quantity).toFixed(2);
   },
 
-  calculateAveragePercentage(averagePrice, currentPrice) {
+  calculateAveragePricePercentage(averagePrice, currentPrice) {
     return ((averagePrice * 100) / currentPrice - 100).toFixed(1);
   },
 
   calculateTotalPercentage(stocks) {
-    return stocks.reduce((acc, stock) => acc + +stock.averagePercentage, 0).toFixed(2);
+    return stocks.reduce((acc, stock) => acc + +stock.averagePricePercentage, 0).toFixed(2);
   },
 
-  getWallet(stocks) {
-    const groupedStocks = groupBy(stocks, "code");
+  getWallet(transactions) {
+    const transactionsByCode = groupBy(transactions, "code");
 
-    const data = Object.values(groupedStocks).map(stocks => {
-      const [stock] = stocks;
-      const code = stock.code;
-      const currentPrice = stock.currentPrice;
-      const totalQuantity = stocks.reduce((acc, stock) => acc + stock.quantity, 0);
-      const totalPaidPrice = stocks.reduce((acc, stock) => acc + stock.paidPrice * stock.quantity, 0);
-      const averagePrice = this.calculateAveragePrice(totalPaidPrice, totalQuantity);
-      const averagePercentage = this.calculateAveragePercentage(averagePrice, currentPrice);
+    const data = Object.values(transactionsByCode).map(transactions => {
+      const [transaction] = transactions;
+      const code = transaction.code;
+      const currentPrice = transaction.currentPrice;
+      const totalQuantity = transactions.reduce((acc, transaction) => acc + transaction.quantity, 0);
+      const totalAmount = transactions.reduce((acc, transaction) => acc + transaction.amount * transaction.quantity, 0);
+      const averagePrice = this.calculateAveragePrice(totalAmount, totalQuantity);
+      const averagePricePercentage = this.calculateAveragePricePercentage(averagePrice, currentPrice);
       const total = (totalQuantity * averagePrice).toFixed(2);
 
-      return { code, totalQuantity, averagePrice, averagePercentage, total };
+      return { code, totalQuantity, currentPrice, averagePrice, averagePricePercentage, total };
     });
 
     const totalPercentage = this.calculateTotalPercentage(data);
