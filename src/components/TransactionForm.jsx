@@ -1,6 +1,5 @@
 import React from "react";
 import { Button, Form, Select, DatePicker, InputNumber } from "antd";
-import moment from "moment";
 
 const TransactionForm = ({ onSubmit, allCompanies, onClose }) => {
   const formLayout = {

@@ -9,7 +9,18 @@ const WalletTable = ({ wallet }) => {
       title: "Cód.",
       dataIndex: "code",
       key: "code",
+      // eslint-disable-next-line jsx-a11y/anchor-is-valid
       render: code => <a href="#">{code}</a>
+    },
+    {
+      title: "Categoria",
+      dataIndex: "category",
+      key: "category"
+    },
+    {
+      title: "Qntd.",
+      dataIndex: "totalQuantity",
+      key: "totalQuantity"
     },
     {
       title: "Preço Atual",

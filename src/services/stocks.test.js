@@ -36,7 +36,7 @@ describe("Stocks", () => {
       }
     ];
 
-    const result = Stocks.remove(store, id);
+    const result = Stocks.removeTransaction(store, id);
 
     expect(result).toEqual([]);
   });
@@ -70,6 +70,7 @@ describe("Stocks", () => {
     const transactions = [
       {
         code: "ITSA4",
+        category: "acoes-br",
         type: "buy",
         currentPrice: 8,
         quantity: 10,
@@ -78,6 +79,7 @@ describe("Stocks", () => {
       },
       {
         code: "ITSA4",
+        category: "acoes-br",
         type: "buy",
         currentPrice: 8,
         quantity: 10,
@@ -86,6 +88,7 @@ describe("Stocks", () => {
       },
       {
         code: "ITSA4",
+        category: "acoes-br",
         type: "buy",
         currentPrice: 8,
         quantity: 10,
@@ -94,6 +97,7 @@ describe("Stocks", () => {
       },
       {
         code: "ITUB4",
+        category: "acoes-br",
         type: "buy",
         currentPrice: 80,
         quantity: 10,
@@ -108,6 +112,7 @@ describe("Stocks", () => {
       data: [
         {
           code: "ITSA4",
+          category: "acoes-br",
           totalQuantity: 30,
           currentPrice: 8,
           averagePrice: "9.33",
@@ -116,6 +121,7 @@ describe("Stocks", () => {
         },
         {
           code: "ITUB4",
+          category: "acoes-br",
           totalQuantity: 10,
           currentPrice: 80,
           averagePrice: "32.00",

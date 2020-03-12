@@ -1,9 +1,7 @@
 import React from "react";
-import { Button, Table, Typography, Tag } from "antd";
+import { Button, Table, Tag } from "antd";
 
 import { toReal } from "../helpers";
-
-const { Text } = Typography;
 
 const TransactionsTable = ({ transactions, removeTransaction }) => {
   const transactionsColumns = [

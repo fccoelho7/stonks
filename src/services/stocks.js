@@ -72,13 +72,22 @@ const Stocks = {
       const [transaction] = transactions;
       const code = transaction.code;
       const currentPrice = transaction.currentPrice;
+      const category = transaction.category;
       const totalQuantity = transactions.reduce((acc, transaction) => acc + transaction.quantity, 0);
       const totalAmount = transactions.reduce((acc, transaction) => acc + transaction.amount * transaction.quantity, 0);
       const averagePrice = this.calculateAveragePrice(totalAmount, totalQuantity);
       const averagePricePercentage = this.calculateAveragePricePercentage(averagePrice, currentPrice);
       const total = (totalQuantity * averagePrice).toFixed(2);
 
-      return { code, totalQuantity, currentPrice, averagePrice, averagePricePercentage, total };
+      return {
+        code,
+        category,
+        totalQuantity,
+        currentPrice,
+        averagePrice,
+        averagePricePercentage,
+        total
+      };
     });
 
     const totalPercentage = this.calculateTotalPercentage(data);
