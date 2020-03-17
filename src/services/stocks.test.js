@@ -73,7 +73,7 @@ describe("Stocks", () => {
       {
         code: "ITSA4.SA",
         category: "acoes-br",
-        type: "buy",
+        type: "sell",
         quantity: 10,
         amount: 11,
         date: new Date("10/02/2018")
@@ -82,6 +82,22 @@ describe("Stocks", () => {
         code: "ITUB4.SA",
         category: "acoes-br",
         type: "buy",
+        quantity: 10,
+        amount: 32,
+        date: new Date("1/01/2017")
+      },
+      {
+        code: "OIBR3.SA",
+        category: "acoes-br",
+        type: "buy",
+        quantity: 10,
+        amount: 32,
+        date: new Date("1/01/2017")
+      },
+      {
+        code: "OIBR3.SA",
+        category: "acoes-br",
+        type: "sell",
         quantity: 10,
         amount: 32,
         date: new Date("1/01/2017")
@@ -95,23 +111,23 @@ describe("Stocks", () => {
         {
           code: "ITSA4.SA",
           category: "acoes-br",
-          totalQuantity: 30,
+          totalQuantity: 10,
           currentPrice: 8,
-          averagePrice: "9.33",
-          averagePricePercentage: "16.6",
-          total: "279.90"
+          averagePrice: 6,
+          averagePricePercentage: "-25.00",
+          total: 60
         },
         {
           code: "ITUB4.SA",
           category: "acoes-br",
           totalQuantity: 10,
           currentPrice: 80,
-          averagePrice: "32.00",
-          averagePricePercentage: "-60.0",
-          total: "320.00"
+          averagePrice: 32,
+          averagePricePercentage: "-60.00",
+          total: 320
         }
       ],
-      totalPercentage: "-43.40"
+      totalPercentage: "-85.00"
     });
   });
 });

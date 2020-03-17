@@ -1,19 +1,28 @@
 const axios = require("axios");
-const stocksData = require("./data.json");
+
+const normalizeResponse = ({ o, h, l, c, pc, t }) => ({
+  open: o,
+  high: h,
+  low: l,
+  price: c,
+  previous_price: pc,
+  time: t
+});
 
 exports.handler = async event => {
-  const stocks = event.queryStringParameters.codes.split(",");
+  const symbols = event.queryStringParameters.codes.split(",");
 
-  const promises = stocks.map(
-    code =>
+  const promises = symbols.map(
+    symbol =>
       new Promise(async resolve => {
         try {
-          const { idt } = stocksData.find(stock => stock.code === code);
-          const { data: response } = await axios.get(`http://cotacoes.economia.uol.com.br/ws/asset/${idt}/intraday`);
+          const { data } = await axios.get(
+            `https://finnhub.io/api/v1/quote?symbol=${symbol}&token=bpodruvrh5ra872e4b80`
+          );
 
-          resolve({ code, ...response.data[0] });
+          resolve({ symbol, ...normalizeResponse(data) });
         } catch (e) {
-          resolve({ code, error: true });
+          resolve({ symbol, error: true });
         }
       })
   );
@@ -23,8 +32,8 @@ exports.handler = async event => {
   let body = {};
 
   results.forEach(stock => {
-    const { high, low, price } = stock;
-    body = { ...body, [stock.code]: { high, low, price } };
+    const { price } = stock;
+    body = { ...body, [stock.symbol]: { price } };
   });
 
   return { statusCode: 200, body: JSON.stringify(body) };
