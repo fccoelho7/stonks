@@ -49,7 +49,7 @@ const TransactionsTable = ({ transactions, removeTransaction }) => {
     }
   ];
 
-  const transactionsData = transactions.map(stock => ({ ...stock, key: stock.idt }));
+  const transactionsData = transactions.map(stock => ({ ...stock, key: stock.code }));
 
   return <Table columns={transactionsColumns} dataSource={transactionsData} />;
 };
