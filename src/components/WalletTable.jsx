@@ -26,25 +26,25 @@ const WalletTable = ({ wallet }) => {
       title: "Preço Atual",
       dataIndex: "currentPrice",
       key: "currentPrice",
-      render: value => toReal(+value)
+      render: value => toReal(value)
     },
     {
       title: "Preço Médio",
       dataIndex: "averagePrice",
       key: "averagePrice",
-      render: value => toReal(+value)
+      render: value => toReal(value)
     },
     {
       title: "Rent. Sobre PM",
       dataIndex: "averagePricePercentage",
       key: "averagePricePercentage",
-      render: value => `${+value}%`
+      render: value => `${value}%`
     },
     {
       title: "Saldo Bruto",
       dataIndex: "total",
       key: "total",
-      render: value => toReal(+value)
+      render: value => toReal(value)
     }
   ];
 

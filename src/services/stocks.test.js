@@ -41,6 +41,63 @@ describe("Stocks", () => {
     expect(result).toEqual([]);
   });
 
+  it("returns composition by category", () => {
+    const transactions = [
+      {
+        code: "ITSA4.SA",
+        category: "acoes-br",
+        type: "buy",
+        quantity: 10,
+        amount: 7,
+        date: new Date("10/01/2020")
+      },
+      {
+        code: "ITUB4.SA",
+        category: "acoes-br",
+        type: "buy",
+        quantity: 10,
+        amount: 10,
+        date: new Date("10/01/2019")
+      },
+      {
+        code: "IVVB11.SA",
+        category: "acoes-us",
+        type: "buy",
+        quantity: 10,
+        amount: 10,
+        date: new Date("10/01/2019")
+      },
+      {
+        code: "KNRI11.SA",
+        category: "fii",
+        type: "buy",
+        quantity: 10,
+        amount: 11,
+        date: new Date("10/02/2018")
+      },
+      {
+        code: "CVCB3.SA",
+        category: "acoes-br",
+        type: "buy",
+        quantity: 10,
+        amount: 11,
+        date: new Date("10/02/2018")
+      },
+      {
+        code: "CVCB3.SA",
+        category: "acoes-br",
+        type: "sell",
+        quantity: 10,
+        amount: 11,
+        date: new Date("10/02/2018")
+      }
+    ];
+
+    const result = Stocks.getWalletComposition(transactions);
+
+    expect(result).toEqual({ "acoes-br": 2, "acoes-us": 1, fii: 1 });
+  });
+
   it("returns wallet", async () => {
     const axiosGetMock = jest.spyOn(axios, "get");
 

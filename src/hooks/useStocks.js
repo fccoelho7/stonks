@@ -14,7 +14,9 @@ function useStocks(initialValues = []) {
 
   const allCompanies = StockService.getAllStocks();
 
-  return { transactions, addTransaction, removeTransaction, wallet, getWallet, allCompanies };
+  const composition = StockService.getWalletComposition(transactions);
+
+  return { transactions, addTransaction, removeTransaction, wallet, getWallet, allCompanies, composition };
 }
 
 export default useStocks;

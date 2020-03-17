@@ -41,7 +41,6 @@ const TransactionForm = ({ onSubmit, allCompanies, onClose }) => {
           <Select.Option value="acoes-br">Ações BR</Select.Option>
           <Select.Option value="acoes-us">Ações US</Select.Option>
           <Select.Option value="fii">FII</Select.Option>
-          <Select.Option value="caixa">Caixa</Select.Option>
         </Select>
       </Form.Item>
       <Form.Item label="Quantidade" name="quantity" rules={[{ required: true }]}>

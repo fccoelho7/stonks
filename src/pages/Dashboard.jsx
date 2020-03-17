@@ -1,52 +1,20 @@
 import React, { useEffect, useState, useRef } from "react";
 import { Layout, Menu, Card, Row, Col, Button, Drawer } from "antd";
-import Chart from "chart.js";
 
 import useStocks from "../hooks/useStocks";
 import TransactionsTable from "../components/TransactionsTable";
 import WalletTable from "../components/WalletTable";
 import TransactionForm from "../components/TransactionForm";
+import CompositionChart from "../components/CompositionChart";
 
 const { Sider, Content } = Layout;
 
 function App() {
-  const { transactions, addTransaction, removeTransaction, getWallet, wallet, allCompanies } = useStocks();
+  const { transactions, addTransaction, removeTransaction, getWallet, wallet, allCompanies, composition } = useStocks();
   const [visible, setVisible] = useState(false);
-  const chartTransactionsEl = useRef(null);
-  const chartCategoriesEl = useRef(null);
 
   useEffect(() => {
     getWallet();
-
-    new Chart(chartTransactionsEl.current, {
-      type: "line",
-      data: {
-        datasets: [
-          {
-            label: "Aplicações",
-            data: [
-              { x: 10, y: 20 },
-              { x: 30, y: 20 },
-              { x: 10, y: 50 },
-              { x: 40, y: 10 },
-              { x: 20, y: 30 }
-            ]
-          }
-        ]
-      }
-    });
-
-    new Chart(chartCategoriesEl.current, {
-      type: "doughnut",
-      data: {
-        datasets: [
-          {
-            data: [25, 25, 25, 25]
-          }
-        ],
-        labels: ["Ações BR", "Ações US", "FII", "Caixa"]
-      }
-    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transactions]);
 
@@ -80,19 +48,9 @@ function App() {
               />
             </Drawer>
             <Row gutter={30}>
-              <Col span={12}>
-                <Card title="Rendimentos" style={{ marginBottom: 30 }}>
-                  <canvas ref={chartTransactionsEl} height={100} />
-                </Card>
-              </Col>
-              <Col span={12}>
-                <Card title="Composição" style={{ marginBottom: 30 }}>
-                  <canvas ref={chartCategoriesEl} height={100} />
-                </Card>
-              </Col>
               <Col span={14}>
-                <Card title="Carteira">
-                  <h3>Rendimento Total: {wallet?.totalPercentage}%</h3>
+                <Card title={`Carteira - Rendimento Total: ${wallet?.totalPercentage || 0}%`}>
+                  <CompositionChart composition={composition} style={{ marginBottom: 30 }} />
                   <WalletTable wallet={wallet} />
                 </Card>
               </Col>

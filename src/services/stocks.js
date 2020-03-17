@@ -98,6 +98,19 @@ const Stocks = {
     const totalPercentage = this.calculateTotalPercentage(data);
 
     return { data, totalPercentage };
+  },
+
+  getWalletComposition(transactions) {
+    const transactionsByCategory = groupBy(transactions, "category");
+    const compositions = {};
+
+    Object.keys(transactionsByCategory).forEach(category => {
+      const stocks = transactionsByCategory[category];
+      const quantity = stocks.reduce((acc, stock) => (stock.type === "buy" ? acc + 1 : acc - 1), 0);
+      compositions[category] = quantity;
+    });
+
+    return compositions;
   }
 };
 
