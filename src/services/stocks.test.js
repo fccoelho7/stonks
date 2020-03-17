@@ -9,7 +9,7 @@ describe("Stocks", () => {
 
     const newTransaction = {
       id,
-      idt: 376,
+      code: "ITSA4.SA",
       type: "buy",
       quantity: 100,
       amount: 10.0,
@@ -19,7 +19,7 @@ describe("Stocks", () => {
 
     const result = Stocks.addTransaction(store, newTransaction);
 
-    expect(result).toEqual([{ ...newTransaction, code: "ITSA4.SA", currentPrice: 0 }]);
+    expect(result).toEqual([newTransaction]);
   });
 
   it("removes a transaction", () => {
@@ -28,7 +28,7 @@ describe("Stocks", () => {
     const store = [
       {
         id,
-        idt: 376,
+        code: "ITSA4.SA",
         type: "buy",
         quantity: 100,
         amount: 10.0,
@@ -41,77 +41,59 @@ describe("Stocks", () => {
     expect(result).toEqual([]);
   });
 
-  it("updates stocks quotes", async () => {
+  it("returns wallet", async () => {
     const axiosGetMock = jest.spyOn(axios, "get");
 
-    axiosGetMock.mockImplementation(() => Promise.resolve({ data: [{ idt: "376", price: 10.4 }] }));
+    axiosGetMock.mockImplementation(() =>
+      Promise.resolve({
+        data: {
+          "ITSA4.SA": { price: 8 },
+          "ITUB4.SA": { price: 80 }
+        }
+      })
+    );
 
-    const store = [
-      {
-        id: Date.now(),
-        idt: 376,
-        type: "buy",
-        quantity: 100,
-        amount: 10.0,
-        date: new Date("03/11/2020")
-      }
-    ];
-
-    const result = await Stocks.updateStocksQuote(store);
-
-    expect(result).toEqual([{ ...store[0], currentPrice: 10.4, total: 1040 }]);
-  });
-
-  it("finds stock by idt", () => {
-    expect(Stocks.getStockCodeByIdt(376).code).toEqual("ITSA4.SA");
-  });
-
-  it("returns wallet", () => {
     const transactions = [
       {
-        code: "ITSA4",
+        code: "ITSA4.SA",
         category: "acoes-br",
         type: "buy",
-        currentPrice: 8,
         quantity: 10,
         amount: 7,
         date: new Date("10/01/2020")
       },
       {
-        code: "ITSA4",
+        code: "ITSA4.SA",
         category: "acoes-br",
         type: "buy",
-        currentPrice: 8,
         quantity: 10,
         amount: 10,
         date: new Date("10/01/2019")
       },
       {
-        code: "ITSA4",
+        code: "ITSA4.SA",
         category: "acoes-br",
         type: "buy",
-        currentPrice: 8,
         quantity: 10,
         amount: 11,
         date: new Date("10/02/2018")
       },
       {
-        code: "ITUB4",
+        code: "ITUB4.SA",
         category: "acoes-br",
         type: "buy",
-        currentPrice: 80,
         quantity: 10,
         amount: 32,
         date: new Date("1/01/2017")
       }
     ];
 
-    const result = Stocks.getWallet(transactions);
+    const result = await Stocks.getWallet(transactions);
 
     expect(result).toEqual({
       data: [
         {
-          code: "ITSA4",
+          code: "ITSA4.SA",
           category: "acoes-br",
           totalQuantity: 30,
           currentPrice: 8,
@@ -120,7 +102,7 @@ describe("Stocks", () => {
           total: "279.90"
         },
         {
-          code: "ITUB4",
+          code: "ITUB4.SA",
           category: "acoes-br",
           totalQuantity: 10,
           currentPrice: 80,

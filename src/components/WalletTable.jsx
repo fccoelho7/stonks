@@ -38,7 +38,7 @@ const WalletTable = ({ wallet }) => {
       title: "Rent. Sobre PM",
       dataIndex: "averagePricePercentage",
       key: "averagePricePercentage",
-      render: value => `${value}%`
+      render: value => `${+value}%`
     },
     {
       title: "Saldo Bruto",
@@ -48,11 +48,9 @@ const WalletTable = ({ wallet }) => {
     }
   ];
 
-  const walletData = wallet.data.map((stock, key) => {
-    return { ...stock, key };
-  });
+  const walletData = wallet?.data?.map((stock, key) => ({ ...stock, key }));
 
-  return <Table columns={walletColumns} dataSource={walletData} />;
+  return <Table loading={!walletData} columns={walletColumns} dataSource={walletData} />;
 };
 
 export default WalletTable;

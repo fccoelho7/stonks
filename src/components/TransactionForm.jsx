@@ -27,10 +27,10 @@ const TransactionForm = ({ onSubmit, allCompanies, onClose }) => {
           <Select.Option value="sell">Resgate</Select.Option>
         </Select>
       </Form.Item>
-      <Form.Item label="Ativo" name="idt" rules={[{ required: true }]}>
+      <Form.Item label="Ativo" name="code" rules={[{ required: true }]}>
         <Select showSearch optionFilterProp="children" autoFocus>
           {allCompanies.map(stock => (
-            <Select.Option value={stock?.idt} key={stock?.idt}>
+            <Select.Option value={stock?.code} key={stock?.code}>
               {stock?.code} - {stock?.companyAbvName}
             </Select.Option>
           ))}

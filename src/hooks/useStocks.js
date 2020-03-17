@@ -1,21 +1,20 @@
 import { useLocalStorage } from "react-use";
 import StockService from "../services/stocks";
+import { useState } from "react";
 
 function useStocks(initialValues = []) {
   const [transactions, setTransactions] = useLocalStorage("stocks", initialValues);
+  const [wallet, setWallet] = useState({});
 
-  const addTransaction = async transaction =>
-    setTransactions(await StockService.updateStocksQuote(StockService.addTransaction(transactions, transaction)));
+  const addTransaction = async transaction => setTransactions(StockService.addTransaction(transactions, transaction));
 
   const removeTransaction = id => setTransactions(StockService.removeTransaction(transactions, id));
 
-  const refreshQuotes = async () => setTransactions(await StockService.updateStocksQuote(transactions));
-
-  const wallet = StockService.getWallet(transactions);
+  const getWallet = async () => setWallet(await StockService.getWallet(transactions));
 
   const allCompanies = StockService.getAllStocks();
 
-  return { transactions, addTransaction, removeTransaction, refreshQuotes, wallet, allCompanies };
+  return { transactions, addTransaction, removeTransaction, wallet, getWallet, allCompanies };
 }
 
 export default useStocks;

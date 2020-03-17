@@ -1,52 +1,29 @@
 import axios from "axios";
 import groupBy from "lodash/groupBy";
 
-import data from "./data.json";
+import data from "../data.json";
 
 const Stocks = {
   addTransaction(stocks, transaction) {
-    const { idt, date, quantity, amount, category, type } = transaction;
-    const { code } = this.getStockCodeByIdt(transaction.idt);
+    const { code, date, quantity, amount, category, type } = transaction;
     const id = Date.now();
 
     return [
       ...stocks,
       {
         id,
-        idt: +idt,
-        type,
         code,
-        quantity: +quantity,
+        type,
+        quantity,
         amount: +amount,
         category,
-        date,
-        currentPrice: 0
+        date
       }
     ];
   },
 
   removeTransaction(stocks, id) {
     return stocks.filter(stock => stock.id !== id);
-  },
-
-  async updateStocksQuote(stocks) {
-    const ids = stocks.map(stock => stock.idt).join(",");
-
-    const { data: quotes } = await axios.get(`/.netlify/functions/quotes?ids=${ids}`);
-
-    return stocks.map(stock => {
-      const quote = quotes.find(quote => +quote.idt === stock.idt);
-
-      return {
-        ...stock,
-        currentPrice: quote.price,
-        total: stock.quantity * +quote.price
-      };
-    });
-  },
-
-  getStockCodeByIdt(idt) {
-    return this.getAllStocks().find(stock => stock.idt === +idt);
   },
 
   getAllStocks() {
@@ -58,6 +35,7 @@ const Stocks = {
   },
 
   calculateAveragePricePercentage(averagePrice, currentPrice) {
+    if (currentPrice === 0) return 0;
     return ((averagePrice * 100) / currentPrice - 100).toFixed(1);
   },
 
@@ -65,14 +43,21 @@ const Stocks = {
     return stocks.reduce((acc, stock) => acc + +stock.averagePricePercentage, 0).toFixed(2);
   },
 
-  getWallet(transactions) {
-    const transactionsByCode = groupBy(transactions, "code");
+  async getStocksQuotes(codes) {
+    const { data: quotes } = await axios.get(`/.netlify/functions/quotes?codes=${codes}`);
+    return quotes;
+  },
 
-    const data = Object.values(transactionsByCode).map(transactions => {
-      const [transaction] = transactions;
-      const code = transaction.code;
-      const currentPrice = transaction.currentPrice;
-      const category = transaction.category;
+  async getWallet(transactions) {
+    const transactionsByCode = groupBy(transactions, "code");
+    const codes = Object.keys(transactionsByCode);
+    const quotes = await this.getStocksQuotes(codes.join(","));
+
+    const data = codes.map(code => {
+      const currentPrice = quotes[code]?.price || 0;
+      const transactions = transactionsByCode[code];
+      /* TODO: Receive categories from another entity. */
+      const { category } = transactions[0];
       const totalQuantity = transactions.reduce((acc, transaction) => acc + transaction.quantity, 0);
       const totalAmount = transactions.reduce((acc, transaction) => acc + transaction.amount * transaction.quantity, 0);
       const averagePrice = this.calculateAveragePrice(totalAmount, totalQuantity);

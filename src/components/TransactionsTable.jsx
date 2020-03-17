@@ -6,17 +6,6 @@ import { toReal } from "../helpers";
 const TransactionsTable = ({ transactions, removeTransaction }) => {
   const transactionsColumns = [
     {
-      title: "",
-      dataIndex: "type",
-      key: "type",
-      render: value => {
-        const type = value === "buy" ? "Aporte" : "Resgate";
-        const color = value === "buy" ? "green" : "red";
-
-        return <Tag color={color}>{type}</Tag>;
-      }
-    },
-    {
       title: "Ativo",
       dataIndex: "code",
       key: "code"
@@ -24,7 +13,18 @@ const TransactionsTable = ({ transactions, removeTransaction }) => {
     {
       title: "Qntd.",
       dataIndex: "quantity",
-      key: "quantity"
+      key: "quantity",
+      render: (value, record) => {
+        const color = record.type === "buy" ? "green" : "red";
+        const sign = record.type === "buy" ? "+" : "-";
+
+        return (
+          <Tag color={color}>
+            {sign}
+            {value}
+          </Tag>
+        );
+      }
     },
     {
       title: "Preço",
