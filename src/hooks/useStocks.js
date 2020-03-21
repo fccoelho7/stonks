@@ -1,6 +1,6 @@
 import { useLocalStorage } from "react-use";
 import StockService from "../services/stocks";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 function useStocks(initialValues = []) {
   const [transactions, setTransactions] = useLocalStorage("stocks", initialValues);
@@ -14,7 +14,7 @@ function useStocks(initialValues = []) {
 
   const allCompanies = StockService.getAllStocks();
 
-  const composition = StockService.getWalletComposition(transactions);
+  const composition = useMemo(() => StockService.getWalletComposition(transactions), [transactions]);
 
   return { transactions, addTransaction, removeTransaction, wallet, getWallet, allCompanies, composition };
 }
