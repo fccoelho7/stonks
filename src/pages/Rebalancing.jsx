@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Tabs, Row, Col, Card, Table, Spin } from "antd";
-import Rebalancing from "../services/rebalancing";
 
+import Rebalancing from "../services/rebalancing";
 import Layout from "../components/Layout";
-import { useEffect } from "react";
+import { toReal } from "../helpers";
 
 const { TabPane } = Tabs;
 
@@ -32,35 +32,35 @@ const wallet = [
     quantity: 100,
     price: null,
     category: "br",
-    weigth: 1
+    weight: 1
   },
   {
     symbol: "CVCB3.SA",
     quantity: 100,
     price: null,
     category: "br",
-    weigth: 1
+    weight: 1
   },
   {
     symbol: "IVVB11.SA",
     quantity: 100,
     price: null,
     category: "us",
-    weigth: 1
+    weight: 1
   },
   {
-    symbol: "IRBR11.SA",
+    symbol: "BRCR11.SA",
     quantity: 100,
     price: null,
     category: "fii",
-    weigth: 1
+    weight: 1
   },
   {
     symbol: "Nubank 100% CDI",
     quantity: 1,
     price: 10000,
     category: "cash",
-    weigth: 1
+    weight: 1
   }
 ];
 
@@ -83,9 +83,15 @@ function App() {
       key: "symbol"
     },
     {
+      title: "Preço Atual",
+      dataIndex: "price",
+      key: "price",
+      render: price => toReal(price)
+    },
+    {
       title: "Peso",
-      key: "weigth",
-      dataIndex: "weigth"
+      key: "weight",
+      dataIndex: "weight"
     },
     {
       title: "Quantidade",
@@ -93,9 +99,16 @@ function App() {
       key: "quantity"
     },
     {
+      title: "Tenho (%)",
+      key: "percentage",
+      dataIndex: "percentage",
+      render: percentage => `${percentage}%`
+    },
+    {
       title: "Total (R$)",
       key: "total",
-      dataIndex: "total"
+      dataIndex: "total",
+      render: total => toReal(total)
     }
   ];
 

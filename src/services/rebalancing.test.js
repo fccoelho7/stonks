@@ -9,35 +9,35 @@ describe("Rebalancing", () => {
         quantity: 100,
         price: null,
         category: "br",
-        weigth: 1
+        weight: 1
       },
       {
         symbol: "CVCB3.SA",
         quantity: 100,
         price: null,
         category: "br",
-        weigth: 1
+        weight: 1
       },
       {
         symbol: "IVVB11.SA",
         quantity: 100,
         price: null,
         category: "us",
-        weigth: 1
+        weight: 1
       },
       {
         symbol: "BRCR11.SA",
         quantity: 100,
         price: null,
         category: "fii",
-        weigth: 1
+        weight: 1
       },
       {
         symbol: "Nubank 100% CDI",
         quantity: 1,
         price: 10000,
         category: "cash",
-        weigth: 1
+        weight: 1
       }
     ];
 
@@ -48,8 +48,9 @@ describe("Rebalancing", () => {
           quantity: 100,
           price: 9,
           category: "br",
-          weigth: 1,
+          weight: 1,
           total: 900,
+          percentage: 50,
           selected: false
         },
         {
@@ -57,8 +58,9 @@ describe("Rebalancing", () => {
           quantity: 100,
           price: 7,
           category: "br",
-          weigth: 1,
+          weight: 1,
           total: 700,
+          percentage: 50,
           selected: false
         }
       ],
@@ -68,8 +70,9 @@ describe("Rebalancing", () => {
           quantity: 100,
           price: 130,
           category: "us",
-          weigth: 1,
+          weight: 1,
           total: 13000,
+          percentage: 100,
           selected: false
         }
       ],
@@ -79,8 +82,9 @@ describe("Rebalancing", () => {
           quantity: 100,
           price: 80,
           category: "fii",
-          weigth: 1,
+          weight: 1,
           total: 8000,
+          percentage: 100,
           selected: false
         }
       ],
@@ -90,8 +94,9 @@ describe("Rebalancing", () => {
           quantity: 1,
           price: 10000,
           category: "cash",
-          weigth: 1,
+          weight: 1,
           total: 10000,
+          percentage: 100,
           selected: false
         }
       ]
