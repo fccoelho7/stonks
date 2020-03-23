@@ -7,99 +7,130 @@ describe("Rebalancing", () => {
       {
         symbol: "ITSA4.SA",
         quantity: 100,
-        price: null,
+        currentPrice: null,
         category: "br",
         weight: 1
       },
       {
         symbol: "CVCB3.SA",
         quantity: 100,
-        price: null,
+        currentPrice: null,
         category: "br",
         weight: 1
       },
       {
         symbol: "IVVB11.SA",
         quantity: 100,
-        price: null,
+        currentPrice: null,
         category: "us",
         weight: 1
       },
       {
         symbol: "BRCR11.SA",
         quantity: 100,
-        price: null,
+        currentPrice: null,
         category: "fii",
         weight: 1
       },
       {
         symbol: "Nubank 100% CDI",
         quantity: 1,
-        price: 10000,
+        currentPrice: 10000,
         category: "cash",
         weight: 1
       }
     ];
 
     const result = {
-      br: [
-        {
-          symbol: "ITSA4.SA",
-          quantity: 100,
-          price: 9,
-          category: "br",
-          weight: 1,
-          total: 900,
-          percentage: 50,
-          selected: false
-        },
-        {
-          symbol: "CVCB3.SA",
-          quantity: 100,
-          price: 7,
-          category: "br",
-          weight: 1,
-          total: 700,
-          percentage: 50,
-          selected: false
-        }
-      ],
-      us: [
-        {
-          symbol: "IVVB11.SA",
-          quantity: 100,
-          price: 130,
-          category: "us",
-          weight: 1,
-          total: 13000,
-          percentage: 100,
-          selected: false
-        }
-      ],
-      fii: [
-        {
-          symbol: "BRCR11.SA",
-          quantity: 100,
-          price: 80,
-          category: "fii",
-          weight: 1,
-          total: 8000,
-          percentage: 100,
-          selected: false
-        }
-      ],
-      cash: [
-        {
-          symbol: "Nubank 100% CDI",
-          quantity: 1,
-          price: 10000,
-          category: "cash",
-          weight: 1,
-          total: 10000,
-          percentage: 100,
-          selected: false
-        }
-      ]
+      br: {
+        assets: [
+          {
+            amountMissing: -100,
+            category: "br",
+            currentPercentage: 56.25,
+            currentPrice: 9,
+            idealAmount: 800,
+            idealPercentage: 50,
+            quantity: 100,
+            symbol: "ITSA4.SA",
+            currentAmount: 900,
+            weight: 1,
+            selected: false
+          },
+          {
+            amountMissing: 100,
+            category: "br",
+            currentPercentage: 43.75,
+            currentPrice: 7,
+            idealAmount: 800,
+            idealPercentage: 50,
+            quantity: 100,
+            symbol: "CVCB3.SA",
+            currentAmount: 700,
+            weight: 1,
+            selected: false
+          }
+        ],
+        totalCategoryAmount: 1600,
+        totalCategoryPercentage: 4.91
+      },
+      us: {
+        assets: [
+          {
+            amountMissing: 0,
+            category: "us",
+            currentPercentage: 100,
+            currentPrice: 130,
+            idealAmount: 13000,
+            idealPercentage: 100,
+            quantity: 100,
+            symbol: "IVVB11.SA",
+            currentAmount: 13000,
+            weight: 1,
+            selected: false
+          }
+        ],
+        totalCategoryAmount: 13000,
+        totalCategoryPercentage: 39.88
+      },
+      fii: {
+        assets: [
+          {
+            amountMissing: 0,
+            category: "fii",
+            currentPercentage: 100,
+            currentPrice: 80,
+            idealAmount: 8000,
+            idealPercentage: 100,
+            quantity: 100,
+            symbol: "BRCR11.SA",
+            currentAmount: 8000,
+            weight: 1,
+            selected: false
+          }
+        ],
+        totalCategoryAmount: 8000,
+        totalCategoryPercentage: 24.54
+      },
+      cash: {
+        assets: [
+          {
+            amountMissing: 0,
+            category: "cash",
+            currentPercentage: 100,
+            currentPrice: 10000,
+            idealAmount: 10000,
+            idealPercentage: 100,
+            quantity: 1,
+            symbol: "Nubank 100% CDI",
+            currentAmount: 10000,
+            weight: 1,
+            selected: false
+          }
+        ],
+        totalCategoryAmount: 10000,
+        totalCategoryPercentage: 30.67
+      }
     };
 
     const axiosGetMock = jest.spyOn(axios, "get");

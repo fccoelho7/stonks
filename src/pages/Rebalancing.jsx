@@ -30,35 +30,35 @@ const wallet = [
   {
     symbol: "ITSA4.SA",
     quantity: 100,
-    price: null,
+    currentPrice: null,
     category: "br",
     weight: 1
   },
   {
     symbol: "CVCB3.SA",
     quantity: 100,
-    price: null,
+    currentPrice: null,
     category: "br",
     weight: 1
   },
   {
     symbol: "IVVB11.SA",
     quantity: 100,
-    price: null,
+    currentPrice: null,
     category: "us",
     weight: 1
   },
   {
     symbol: "BRCR11.SA",
     quantity: 100,
-    price: null,
+    currentPrice: null,
     category: "fii",
     weight: 1
   },
   {
     symbol: "Nubank 100% CDI",
     quantity: 1,
-    price: 10000,
+    currentPrice: 10000,
     category: "cash",
     weight: 1
   }
@@ -66,11 +66,15 @@ const wallet = [
 
 function App() {
   const [assets] = useState(wallet);
+  const [isLoading, setIsLoading] = useState(true);
   const [assetsByCategories, setAssetsByCategories] = useState({});
 
   useEffect(() => {
     async function fetchWallet() {
-      setAssetsByCategories(await Rebalancing.getWallet(assets));
+      const categories = await Rebalancing.getWallet(assets);
+
+      setAssetsByCategories(categories);
+      setIsLoading(false);
     }
 
     fetchWallet();
@@ -84,9 +88,9 @@ function App() {
     },
     {
       title: "Preço Atual",
-      dataIndex: "price",
-      key: "price",
-      render: price => toReal(price)
+      dataIndex: "currentPrice",
+      key: "currentPrice",
+      render: value => toReal(value)
     },
     {
       title: "Peso",
@@ -100,19 +104,37 @@ function App() {
     },
     {
       title: "Tenho (%)",
-      key: "percentage",
-      dataIndex: "percentage",
-      render: percentage => `${percentage}%`
+      key: "currentPercentage",
+      dataIndex: "currentPercentage",
+      render: value => `${value.toFixed(2)}%`
     },
     {
       title: "Total (R$)",
-      key: "total",
-      dataIndex: "total",
-      render: total => toReal(total)
+      key: "currentAmount",
+      dataIndex: "currentAmount",
+      render: value => toReal(value)
+    },
+    {
+      title: "Ideal (R$)",
+      key: "idealAmount",
+      dataIndex: "idealAmount",
+      render: value => toReal(value)
+    },
+    {
+      title: "Ideal (%)",
+      key: "idealPercentage",
+      dataIndex: "idealPercentage",
+      render: value => `${value.toFixed(2)}%`
+    },
+    {
+      title: "Falta (R$)",
+      key: "amountMissing",
+      dataIndex: "amountMissing",
+      render: value => toReal(value)
     }
   ];
 
-  const isLoading = Object.keys(assetsByCategories).length === 0;
+  const categoriesByKey = Object.keys(assetsByCategories);
 
   return (
     <Layout>
@@ -121,11 +143,17 @@ function App() {
           <Card title="Balanceamento">
             <Spin tip="Carregando..." spinning={isLoading}>
               <Tabs onChange={() => {}} type="card">
-                {Object.keys(assetsByCategories).map(category => {
-                  const dataSource = assetsByCategories[category].map(stock => ({ ...stock, key: stock.symbol }));
+                {categoriesByKey.map(category => {
+                  const dataSource = assetsByCategories[category].assets.map(stock => ({
+                    ...stock,
+                    key: stock.symbol
+                  }));
 
                   return (
-                    <TabPane tab={categories[category].label} key={category}>
+                    <TabPane
+                      tab={`${categories[category].label} - ${assetsByCategories[category].totalCategoryPercentage}%`}
+                      key={category}
+                    >
                       <Table dataSource={dataSource} columns={columns} />
                     </TabPane>
                   );
